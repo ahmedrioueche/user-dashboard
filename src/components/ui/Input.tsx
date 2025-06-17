@@ -1,5 +1,4 @@
 import * as React from "react"
-
 import { cn } from "../../lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
@@ -8,8 +7,17 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       <input
         type={type}
         className={cn(
-          "flex h-9 w-full rounded-md border border-input focus:outline-none bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 md:text-sm ",
-          "focus-visible:ring-light-accent/20 dark:focus-visible:ring-dark-accent/20",
+          "flex h-9 w-full rounded-md border",
+          "border-light-border dark:border-dark-border",
+          "bg-light-background dark:bg-dark-background",
+          "text-light-text-primary dark:text-dark-text-primary",
+          "px-3 py-1 text-base shadow-sm transition-all",
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+          "placeholder:text-light-text-secondary dark:placeholder:text-dark-text-secondary",
+          "focus:outline-none focus:border-light-primary dark:focus:border-dark-primary",
+          "focus:ring-2 focus:ring-light-primary/20 dark:focus:ring-dark-primary/20",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "md:text-sm",
           className
         )}
         ref={ref}

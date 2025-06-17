@@ -45,7 +45,7 @@ function UsersPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header Section */}
-      <div className="flex items-center justify-between p-6 py-4 pb-2">
+      <div className="flex items-center justify-between p-4 py-0 pb-2">
         <div>
           <h1 className="text-2xl font-bold text-light-text-primary dark:text-dark-text-primary">
             User Management
@@ -58,7 +58,7 @@ function UsersPage() {
           onClick={handleAddUser}
           className="bg-light-primary hover:bg-light-primary/90 dark:bg-dark-primary dark:hover:bg-dark-primary/90"
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="mr-1 h-4 w-4" />
           Add User
         </Button>
       </div>

@@ -10,8 +10,8 @@ import { Plus, Loader2 } from "lucide-react";
 import { useUserFilters } from "../hooks/useUserFilters";
 import { useUserModal } from "../hooks/useUserModal";
 import { useUsers } from "../hooks/useUsers";
+import { PAGE_SIZE } from "@/constants/general";
 
-const PAGE_SIZE = 5;
 
 function UsersPage() {
   const { users, isLoading, handleSubmit, isMutating } = useUsers();

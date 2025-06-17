@@ -10,7 +10,7 @@ import { Plus, Loader2 } from "lucide-react";
 import { useUserFilters } from "../hooks/useUserFilters";
 import { useUserModal } from "../hooks/useUserModal";
 import { useUsers } from "../hooks/useUsers";
-import { PAGE_SIZE } from "@/constants/general";
+import { PAGE_SIZE } from "../../constants/general";
 
 
 function UsersPage() {

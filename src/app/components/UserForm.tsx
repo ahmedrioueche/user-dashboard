@@ -8,8 +8,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../components/ui/form";
-import { Textarea } from "../../components/ui/textarea";
+} from "../../components/ui/Form";
+import { Textarea } from "../../components/ui/Textarea";
 import { Loader2 } from "lucide-react";
 import {
   Select,

@@ -1,106 +1,46 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchUsers, createUser, updateUser } from "../../api/users";
+import { usePagination } from "../../hooks/usePagination";
 import { Pagination } from "../../components/Pagination";
 import { Button } from "../../components/ui/Button";
-import { UserFormValues } from "../../schemas/user";
-import { User } from "../../types/user";
-import toast from "react-hot-toast";
 import { UserFilters } from "../components/UserFilter";
 import { UserForm } from "../components/UserForm";
 import { UserModal } from "../components/UserModal";
 import { UserTable } from "../components/UserTable";
 import { UserView } from "../components/UserView";
 import { Plus, Loader2 } from "lucide-react";
+import { useUserFilters } from "../hooks/useUserFilters";
+import { useUserModal } from "../hooks/useUserModal";
+import { useUsers } from "../hooks/useUsers";
 
 const PAGE_SIZE = 5;
 
 function UsersPage() {
-  const queryClient = useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [viewMode, setViewMode] = useState<"view" | "edit" | "create">("view");
-  const [nameFilter, setNameFilter] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
+  const { users, isLoading, handleSubmit, isMutating } = useUsers();
+  const { 
+    nameFilter, 
+    roleFilter, 
+    filteredUsers, 
+    setNameFilter, 
+    setRoleFilter, 
+    handleResetFilters 
+  } = useUserFilters(users);
+  const { 
+    isOpen, 
+    selectedUser, 
+    viewMode, 
+    handleViewUser, 
+    handleEditUser, 
+    handleAddUser, 
+    handleClose 
+  } = useUserModal();
+  const { 
+    currentPage, 
+    setCurrentPage, 
+    getPaginatedItems, 
+    totalPages 
+  } = usePagination(PAGE_SIZE);
 
-  const { data: users = [], isLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
-  });
-
-  const filteredUsers = users.filter((user) => {
-    const nameMatch = nameFilter
-      ? `${user.firstname} ${user.lastname}`
-          .toLowerCase()
-          .includes(nameFilter.toLowerCase())
-      : true;
-    const roleMatch = roleFilter !== "all" ? user.role === roleFilter : true;
-    return nameMatch && roleMatch;
-  });
-
-  const paginatedUsers = filteredUsers.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-
-  const totalPages = Math.ceil(filteredUsers.length / PAGE_SIZE);
-
-  const createMutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast.success("User created successfully");
-      setIsModalOpen(false);
-    },
-    onError: () => {
-      toast.error("Failed to create user");
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: updateUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast.success("User updated successfully");
-      setIsModalOpen(false);
-    },
-    onError: () => {
-      toast.error("Failed to update user");
-    },
-  });
-
-  const handleSubmit = (values: UserFormValues) => {
-    if (values.id) {
-      updateMutation.mutate(values as User);
-    } else {
-      createMutation.mutate(values);
-    }
-  };
-
-  const handleViewUser = (user: User) => {
-    setSelectedUser(user);
-    setViewMode("view");
-    setIsModalOpen(true);
-  };
-
-  const handleEditUser = (user: User) => {
-    setSelectedUser(user);
-    setViewMode("edit");
-    setIsModalOpen(true);
-  };
-
-  const handleAddUser = () => {
-    setSelectedUser(null);
-    setViewMode("create");
-    setIsModalOpen(true);
-  };
-
-  const handleResetFilters = () => {
-    setNameFilter("");
-    setRoleFilter("all");
-    setCurrentPage(1);
-  };
+  const paginatedUsers = getPaginatedItems(filteredUsers);
+  const totalPagesCount = totalPages(filteredUsers.length);
 
   return (
     <div className="flex flex-col h-full">
@@ -156,13 +96,13 @@ function UsersPage() {
             </div>
   
             {/* Pagination */}
-            {totalPages > 1 && (
-               <Pagination
-               currentPage={currentPage}
-               totalItems={users.length}
-               itemsPerPage={PAGE_SIZE}
-               onPageChange={setCurrentPage}
-             />
+            {totalPagesCount > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalItems={filteredUsers.length}
+                itemsPerPage={PAGE_SIZE}
+                onPageChange={setCurrentPage}
+              />
             )}
           </div>
         )}
@@ -170,8 +110,8 @@ function UsersPage() {
   
       {/* User Modal */}
       <UserModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isOpen}
+        onClose={handleClose}
         title={
           viewMode === "create"
             ? "Add New User"
@@ -187,7 +127,7 @@ function UsersPage() {
             <UserForm
               user={selectedUser || undefined}
               onSubmit={handleSubmit}
-              isLoading={createMutation.isPending || updateMutation.isPending}
+              isLoading={isMutating}
             />
           )}
         </div>
